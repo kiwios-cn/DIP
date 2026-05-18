@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# 虚拟环境
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 生成的结果图像（保留原始图像Picture1.png）
+*_result.png
+*_analysis.png
+*_comparison.png
+*_report.png
+*_detailed*.png
+*_watershed*.png
+binarization_comparison.png
+segmentation_quality_report.png
+
+# 备份文件
+*_backup*.py
+*.bak
+
+# 测试文件
+test-*.py
+check_*.py
+analyze_*.py
+debug_*.py
+final_*.py
+
+# 临时文件
+*.tmp
+*.log
+.DS_Store
+
+# Cellpose缓存
+.cellpose/
