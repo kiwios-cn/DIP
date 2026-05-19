@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>细胞分割系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <header>
+            <h1>🔬 细胞分割分析系统</h1>
+            <p>上传细胞图像，点击细胞查看详细参数</p>
+        </header>
+
+        <!-- 上传区域 -->
+        <div class="upload-section">
+            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+            <button id="uploadBtn" class="btn-primary">📁 选择图像</button>
+            <span id="fileName"></span>
+            <div id="loadingIndicator" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <span>正在处理图像...</span>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 左侧：图像显示区 -->
+            <div class="image-panel">
+                <div id="imageContainer" class="image-container">
+                    <div class="placeholder">
+                        <p>👆 请上传细胞图像开始分析</p>
+                    </div>
+                    <canvas id="imageCanvas"></canvas>
+                </div>
+                <div id="imageInfo" class="image-info" style="display: none;">
+                    <span id="cellCount"></span>
+                    <span id="imageSize"></span>
+                </div>
+            </div>
+
+            <!-- 右侧：细胞信息面板 -->
+            <div class="info-panel">
+                <div id="cellInfoPlaceholder" class="info-placeholder">
+                    <p>👈 点击左侧图像中的细胞查看详细信息</p>
+                </div>
+
+                <div id="cellInfoContent" class="cell-info-content" style="display: none;">
+                    <h2>细胞 #<span id="cellLabel"></span></h2>
+
+                    <!-- 细胞放大图 -->
+                    <div class="cell-image-container">
+                        <img id="cellImage" src="" alt="细胞放大图">
+                    </div>
+
+                    <!-- 参数表格 -->
+                    <div class="parameters">
+                        <h3>📊 形态学参数</h3>
+                        <table class="param-table">
+                            <tr>
+                                <td class="param-name">长轴长度</td>
+                                <td class="param-value" id="majorAxis">-</td>
+                                <td class="param-unit">像素</td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">短轴长度</td>
+                                <td class="param-value" id="minorAxis">-</td>
+                                <td class="param-unit">像素</td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">圆度</td>
+                                <td class="param-value" id="circularity">-</td>
+                                <td class="param-unit"></td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">面积</td>
+                                <td class="param-value" id="area">-</td>
+                                <td class="param-unit">像素²</td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">周长</td>
+                                <td class="param-value" id="perimeter">-</td>
+                                <td class="param-unit">像素</td>
+                            </tr>
+                        </table>
+
+                        <h3>📈 灰度统计</h3>
+                        <table class="param-table">
+                            <tr>
+                                <td class="param-name">均值</td>
+                                <td class="param-value" id="meanIntensity">-</td>
+                                <td class="param-unit"></td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">方差</td>
+                                <td class="param-value" id="variance">-</td>
+                                <td class="param-unit"></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- 圆度指示器 -->
+                    <div class="circularity-indicator">
+                        <div class="indicator-label">圆度指示</div>
+                        <div class="indicator-bar">
+                            <div id="circularityBar" class="indicator-fill"></div>
+                        </div>
+                        <div class="indicator-text">
+                            <span>不规则</span>
+                            <span>完美圆形</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

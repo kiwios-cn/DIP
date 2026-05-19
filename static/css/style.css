@@ -1,0 +1,314 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+                 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+/* 头部 */
+header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+header p {
+    font-size: 1.1em;
+    opacity: 0.9;
+}
+
+/* 上传区域 */
+.upload-section {
+    padding: 30px;
+    text-align: center;
+    background: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.1em;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+#fileName {
+    margin-left: 20px;
+    color: #666;
+    font-size: 1em;
+}
+
+/* 加载指示器 */
+.loading {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 20px;
+    color: #667eea;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 主内容区域 */
+.main-content {
+    display: flex;
+    min-height: 600px;
+}
+
+/* 左侧图像面板 */
+.image-panel {
+    flex: 1;
+    padding: 30px;
+    border-right: 2px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+}
+
+.image-container {
+    flex: 1;
+    background: #f8f9fa;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.placeholder {
+    text-align: center;
+    color: #999;
+    font-size: 1.2em;
+}
+
+#imageCanvas {
+    max-width: 100%;
+    max-height: 100%;
+    cursor: crosshair;
+    display: none;
+}
+
+.image-info {
+    margin-top: 15px;
+    padding: 15px;
+    background: #e7f3ff;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-around;
+    font-size: 1em;
+    color: #333;
+}
+
+.image-info span {
+    font-weight: 600;
+}
+
+/* 右侧信息面板 */
+.info-panel {
+    width: 450px;
+    padding: 30px;
+    background: #fafbfc;
+    overflow-y: auto;
+}
+
+.info-placeholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #999;
+    font-size: 1.1em;
+}
+
+.cell-info-content h2 {
+    color: #667eea;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 10px;
+}
+
+/* 细胞放大图 */
+.cell-image-container {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#cellImage {
+    width: 100%;
+    border-radius: 8px;
+    display: block;
+}
+
+/* 参数表格 */
+.parameters h3 {
+    color: #333;
+    margin: 20px 0 15px 0;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+}
+
+.param-table {
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+}
+
+.param-table tr {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.param-table tr:last-child {
+    border-bottom: none;
+}
+
+.param-table td {
+    padding: 12px 15px;
+}
+
+.param-name {
+    font-weight: 600;
+    color: #555;
+    width: 40%;
+}
+
+.param-value {
+    color: #667eea;
+    font-weight: 700;
+    font-size: 1.1em;
+    text-align: right;
+    width: 40%;
+}
+
+.param-unit {
+    color: #999;
+    font-size: 0.9em;
+    width: 20%;
+    text-align: right;
+}
+
+/* 圆度指示器 */
+.circularity-indicator {
+    margin-top: 25px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.indicator-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.indicator-bar {
+    height: 20px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.indicator-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6b6b 0%, #ffd93d 50%, #6bcf7f 100%);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+    width: 0%;
+}
+
+.indicator-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85em;
+    color: #666;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+    .main-content {
+        flex-direction: column;
+    }
+
+    .image-panel {
+        border-right: none;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .info-panel {
+        width: 100%;
+    }
+}
+
+/* 滚动条样式 */
+.info-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.info-panel::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.info-panel::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 4px;
+}
+
+.info-panel::-webkit-scrollbar-thumb:hover {
+    background: #764ba2;
+}

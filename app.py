@@ -14,9 +14,9 @@ from io import BytesIO
 from PIL import Image
 import json
 from skimage import measure, morphology, filters
-from skimage.segmentation import watershed
 from skimage.feature import peak_local_max
 from scipy import ndimage as ndi
+import heapq
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
@@ -43,6 +43,100 @@ class CellSegmentationWeb:
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
         self.preprocessed = clahe.apply(bilateral)
         return self.preprocessed
+
+    def manual_watershed(self, gradient, markers, mask):
+        """
+        手动实现分水岭算法
+
+        参数:
+            gradient: 梯度图像（地形图），像素值代表高度
+            markers: 标记图像，每个种子点有唯一的正整数标签
+            mask: 二值掩码，指定分割区域
+
+        返回:
+            labels: 分割结果，每个区域有唯一标签
+
+        算法原理:
+            1. 将图像看作地形图，像素值代表高度
+            2. 从标记点（种子点）开始，模拟水淹过程
+            3. 使用优先队列按照高度从低到高处理像素
+            4. 当不同区域的水相遇时，形成分水岭边界
+        """
+        h, w = gradient.shape
+        labels = markers.copy().astype(np.int32)
+
+        # 分水岭边界标记为-1
+        WATERSHED_BOUNDARY = -1
+
+        # 优先队列：(高度, y坐标, x坐标)
+        pq = []
+
+        # 初始化：将所有标记点的邻居加入优先队列
+        for y in range(h):
+            for x in range(w):
+                if labels[y, x] > 0:  # 已标记的种子点
+                    # 检查8邻域
+                    for dy in [-1, 0, 1]:
+                        for dx in [-1, 0, 1]:
+                            if dy == 0 and dx == 0:
+                                continue
+
+                            ny, nx = y + dy, x + dx
+                            if 0 <= ny < h and 0 <= nx < w:
+                                if mask[ny, nx] > 0 and labels[ny, nx] == 0:
+                                    # 未标记的邻居加入队列
+                                    heapq.heappush(pq, (int(gradient[ny, nx]), ny, nx))
+
+        # 分水岭主循环：按高度从低到高处理像素
+        while pq:
+            height, y, x = heapq.heappop(pq)
+
+            # 如果该像素已被标记，跳过
+            if labels[y, x] != 0:
+                continue
+
+            # 检查邻域，找到该像素应该属于的区域
+            neighbor_labels = []
+            for dy in [-1, 0, 1]:
+                for dx in [-1, 0, 1]:
+                    if dy == 0 and dx == 0:
+                        continue
+
+                    ny, nx = y + dy, x + dx
+                    if 0 <= ny < h and 0 <= nx < w:
+                        if labels[ny, nx] > 0:  # 已标记的邻居
+                            neighbor_labels.append(labels[ny, nx])
+
+            if len(neighbor_labels) == 0:
+                # 没有已标记的邻居，跳过
+                continue
+
+            # 检查邻居标签是否一致
+            unique_labels = set(neighbor_labels)
+
+            if len(unique_labels) == 1:
+                # 所有邻居属于同一区域，该像素也属于该区域
+                labels[y, x] = neighbor_labels[0]
+
+                # 将该像素的未标记邻居加入队列
+                for dy in [-1, 0, 1]:
+                    for dx in [-1, 0, 1]:
+                        if dy == 0 and dx == 0:
+                            continue
+
+                        ny, nx = y + dy, x + dx
+                        if 0 <= ny < h and 0 <= nx < w:
+                            if mask[ny, nx] > 0 and labels[ny, nx] == 0:
+                                heapq.heappush(pq, (int(gradient[ny, nx]), ny, nx))
+
+            else:
+                # 邻居属于不同区域，该像素是分水岭边界
+                labels[y, x] = WATERSHED_BOUNDARY
+
+        # 将分水岭边界(-1)转换为0（背景）
+        labels[labels == WATERSHED_BOUNDARY] = 0
+
+        return labels
 
     def segment_cells(self):
         """细胞分割"""
@@ -90,8 +184,8 @@ class CellSegmentationWeb:
         gradient = cv2.morphologyEx(preprocessed, cv2.MORPH_GRADIENT,
                                     cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
 
-        # 分水岭
-        markers = watershed(gradient, markers, mask=binary)
+        # 手动实现的分水岭算法
+        markers = self.manual_watershed(gradient, markers, binary)
 
         self.labeled_image = markers
         return self.labeled_image

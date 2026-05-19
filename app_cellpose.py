@@ -36,11 +36,18 @@ class CellSegmentationCellpose:
         else:
             self.original_image = image
 
-        # 转换为BGR格式（OpenCV格式）
-        if len(self.original_image.shape) == 3:
+        # 处理不同的图像格式
+        if len(self.original_image.shape) == 2:
+            # 灰度图像，转换为BGR以便后续处理
+            self.gray_image = self.original_image
+            self.original_image = cv2.cvtColor(self.original_image, cv2.COLOR_GRAY2BGR)
+        elif len(self.original_image.shape) == 3:
+            # 彩色图像，转换为BGR格式（OpenCV格式）
             self.original_image = cv2.cvtColor(self.original_image, cv2.COLOR_RGB2BGR)
+            self.gray_image = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)
+        else:
+            raise ValueError(f"不支持的图像格式: shape={self.original_image.shape}")
 
-        self.gray_image = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)
         self.labeled_image = None
         self.regions = None
         self.model = None
@@ -293,7 +300,7 @@ def main():
         col1, col2 = st.columns(2)
         with col1:
             st.subheader("原始图像")
-            st.image(image, use_container_width=True)
+            st.image(image, width='stretch')
 
         # 执行分割按钮
         if st.button("🚀 开始分割", type="primary"):
@@ -362,7 +369,7 @@ def main():
         with col2:
             st.subheader("分割结果")
             result_image = segmenter.create_segmentation_image()
-            st.image(result_image, use_container_width=True)
+            st.image(result_image, width='stretch')
 
         # 细胞列表
         st.markdown("---")
@@ -388,7 +395,7 @@ def main():
                     # 显示细胞放大图
                     st.subheader("细胞放大图")
                     cell_image = segmenter.create_cell_detail_image(region)
-                    st.image(cell_image, use_container_width=True)
+                    st.image(cell_image, width='stretch')
 
                 with col2:
                     # 显示细胞参数
